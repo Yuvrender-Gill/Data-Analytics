@@ -48,35 +48,39 @@ Create view winner_parties as
 		join election e on er.election_id = e.id
 	order by e.e_date;  
 
-create view compare_elections as
-	select wp.election_id as parl_election, wp.party_id, wp.e_date as parl_date, ee.election_id as euro_election_id, ee.election_date as euro_date, ee2.election_date as prev_euro_date
+create view compare_election as
+        (SELECT wp.election_id as parl_election, wp.party_id, wp.e_date as parl_date, ee.election_id as euro_election_id, ee.election_date as euro_date, ee2.election_date as prev_euro_date
 	from winner_parties wp, euro_elections ee join euro_elections ee2
 		on ee.previous_ep_election_id = ee2.election_id
-	order by wp.party_id, wp.e_date, ee.election_date;
+	
+	
+	UNION ALL 
+
+	select wp.election_id as parl_election, wp.party_id, wp.e_date as parl_date, ee.election_id as euro_election_id, ee.election_date as euro_date, (select min(e_date) from election) as prev_euro_date
+from winner_parties wp, euro_elections ee
+	where ee.previous_ep_election_id is NULL 
+	);
+ 
+create view compare_elections as
+	select distinct * from compare_election order by party_id, parl_date, euro_date; 
+
 
 create view within_range as
-	select party_id as pid, count(distinct parl_date)  as times
+	select distinct party_id , count(distinct euro_date) as times 
 	from compare_elections    
-	where parl_date >= prev_euro_date and parl_date < euro_date
-	group by party_id;
+        where parl_date >= prev_euro_date and parl_date < euro_date
+        group by party_id 	
+	order by party_id;
 
-create view before_first_euro as
-	select distinct party_id, 1 as occur 
-	from compare_elections 
-	where parl_date < (select min(election_date) from euro_elections)
-	;
+
 create view in_every_election as
-	select wr.pid as partyID, family partyFamily
-	from within_range wr join before_first_euro bfe
-		on wr.pid = bfe.party_id
+	select party_id as partyID, family 
+	from within_range natural left 
 		join party_family pf 
-		on pf.party_id = wr.pid
-	where times + occur >= (select count(distinct election_date) from euro_elections) 
-	order by pid; 
+		
+	where times  >= (select count(distinct election_date) from euro_elections)
+	order by party_id; 
 
---create view before_first_euro_elections as
---	select party_id, parl_date
---	from compare_elections
-	
-	-- the answer to the query 
+
+-- the answer to the query 
 insert into q7(select * from in_every_election); 
