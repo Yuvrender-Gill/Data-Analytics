@@ -1,4 +1,4 @@
-psql (9.5.12)
+Dql (9.5.12)
 Type "help" for help.
 
 csc343h-gillyuv2=> \i schema.ddl
@@ -167,17 +167,13 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
-csc343h-gillyuv2=> \echo Query 1
-Query 1
 csc343h-gillyuv2=> \i q1.sql
-  customer_email  |      cancel_ratio
-------------------+------------------------
- a.n@mail.com     | 1.00000000000000000000
- jj.swtz@mail.com | 1.00000000000000000000
+  customer_email   |      cancel_ratio
+-------------------+------------------------
+ jj.swtz@mail.com  | 1.00000000000000000000
+ malik_aa@mail.com | 1.00000000000000000000
 (2 rows)
 
-csc343h-gillyuv2=> \echo Query 2
-Query 2
 csc343h-gillyuv2=> \i q2.sql
   customer_email  | num_shared_reservations
 ------------------+-------------------------
@@ -185,26 +181,15 @@ csc343h-gillyuv2=> \i q2.sql
  shenian@mail.com |                       2
 (2 rows)
 
-csc343h-gillyuv2=> \echo Query 3
-Query 3
 csc343h-gillyuv2=> \i q3.sql
  model_name
 ------------
  BMW X5
 (1 row)
 
-csc343h-gillyuv2=> \echo Query 4
-Query 4
 csc343h-gillyuv2=> \i q4.sql
 SET
    customer_email
 --------------------
  s.hilbert@mail.com
 (1 row)
-
-
-
-
-
-
-
