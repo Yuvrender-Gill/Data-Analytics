@@ -1,53 +1,34 @@
-SET SEARCH_PATH TO parlgov;
-drop table if exists q1 cascade;
+with Cancelled as (
+	-- All the reservations with cancel status 
+	select Cust_Reservation.Email as Email, count(Status) as Num 
+	from Reservation, Cust_Reservation 
+	where Reservation.ID = Cust_Reservation.Reservation_ID and Reservation.Status = 'Cancelled' 
+	group by Cust_Reservation.Email
 
--- You must not change this table definition.
-
-create table q1(
-century VARCHAR(2),
-country VARCHAR(50), 
-left_right REAL, 
-state_market REAL, 
-liberty_authority REAL
-);
-
-
--- You may find it convenient to do this for each of the views
--- that define your intermediate steps.  (But give them better names!)
-DROP VIEW IF EXISTS intermediate_step CASCADE;
-DROP VIEW IF EXISTS election_winners CASCADE;
-DROP VIEW IF EXISTS test CASCADE;
-
--- get  all of the  winning  parties  based on the  cabinet
-create  view  election_winners  as
-	select  election.id as  election_id , cabinet_party.party_id
-	from  election  join  cabinet
-		on  election.id = cabinet.election_id
-	join  cabinet_party
-		on  cabinet.id = cabinet_party.cabinet_id
-	where  cabinet_party.pm = true;
-
--- Define views for your intermediate steps here.
-CREATE VIEW winner_parties AS
-	SELECT election_result.party_id
-	FROM election_winners join election_result 
-		on election_result.election_id = election_winners.election_id
-        where election_result.party_id = election_winners.party_id;
-
--- Define views for your intermediate steps here.
-CREATE VIEW winner_alliance AS
-	SELECT election_result.alliance_id
-	FROM election_winners join election_result 
-		on election_result.election_id = election_winners.election_id
-	where election_result.party_id = election_winners.party_id;
-
--- Define views for your intermediate steps here.
-CREATE VIEW test AS
-	SELECT election_result.election_id AS election_id, DISTINCT election.e_date
-	FROM election_result join election
-		on election_result.election_id = election.id
-	where election.e_type='Parliamentary election'
-	ORDER BY election.e_date, election_result.election_id;
--- the answer to the query 
---insert into q1 (SELECT * FROM election_winners);
-
+),
+Not_Cancelled as (
+	-- All the reservations which were not cancelled. 
+	select Cust_Reservation.Email as Email, count(Status) as Num 
+	from Reservation, Cust_Reservation 
+	where Reservation.ID = Cust_Reservation.Reservation_ID and Reservation.Status != 'Cancelled' 
+	group by Cust_Reservation.Email
+),
+All_Reservations as (
+	-- All the emails with their number of cancellations and number of reservations which 
+	-- were not cancelled.
+	select Cancelled.Email as Email, Cancelled.Num as Cancelled, Not_Cancelled.Num as Not_Cancelled 
+	from Cancelled, Not_Cancelled 
+	where Cancelled.Email = Not_Cancelled.Email
+),
+Ratios as(
+	-- Emails with their corresponding cancellation ratios
+	select Email, cast(Cancelled as decimal) / cast(Not_Cancelled as decimal) as Ratio 
+	from All_Reservations 
+	order by Ratio desc, Email
+)
+-- Final querry with the formated output. 
+select Customer.Email as Customer_Email, Ratios.Ratio as Cancel_Ratio 
+from Ratios, Customer 
+where Ratios.Email = Customer.Email 
+order by Ratios.Ratio desc, Customer.Email 
+limit 2;

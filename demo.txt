@@ -1,3 +1,16 @@
+psql (9.5.12)
+Type "help" for help.
+
+csc343h-gillyuv2=> \i schema.ddl
+psql:schema.ddl:16: NOTICE:  drop cascades to 8 other objects
+DETAIL:  drop cascades to table carschema.customer
+drop cascades to type carschema.vehicle_type
+drop cascades to table carschema.model
+drop cascades to table carschema.rentalistation
+drop cascades to table carschema.car
+drop cascades to type carschema.reservation_status
+drop cascades to table carschema.reservation
+drop cascades to table carschema.cust_reservation
 DROP SCHEMA
 CREATE SCHEMA
 SET
@@ -9,6 +22,7 @@ CREATE TABLE
 CREATE TYPE
 CREATE TABLE
 CREATE TABLE
+csc343h-gillyuv2=> \i data.sql
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
@@ -153,26 +167,44 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
-  customer_email   |      cancel_ratio      
--------------------+------------------------
- jj.swtz@mail.com  | 1.00000000000000000000
- malik_aa@mail.com | 1.00000000000000000000
+csc343h-gillyuv2=> \echo Query 1
+Query 1
+csc343h-gillyuv2=> \i q1.sql
+  customer_email  |      cancel_ratio
+------------------+------------------------
+ a.n@mail.com     | 1.00000000000000000000
+ jj.swtz@mail.com | 1.00000000000000000000
 (2 rows)
 
-  customer_email  | num_shared_reservations 
+csc343h-gillyuv2=> \echo Query 2
+Query 2
+csc343h-gillyuv2=> \i q2.sql
+  customer_email  | num_shared_reservations
 ------------------+-------------------------
  dchen@mail.com   |                       2
  shenian@mail.com |                       2
 (2 rows)
 
- model_name 
+csc343h-gillyuv2=> \echo Query 3
+Query 3
+csc343h-gillyuv2=> \i q3.sql
+ model_name
 ------------
  BMW X5
 (1 row)
 
+csc343h-gillyuv2=> \echo Query 4
+Query 4
+csc343h-gillyuv2=> \i q4.sql
 SET
-   customer_email   
+   customer_email
 --------------------
  s.hilbert@mail.com
 (1 row)
+
+
+
+
+
+
 
