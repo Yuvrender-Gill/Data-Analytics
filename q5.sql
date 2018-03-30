@@ -74,11 +74,11 @@ CREATE VIEW winner_alliance_votes AS
 -- Get all the loosing parties
 CREATE VIEW losers as 
 	SELECT pvc.election_id, pvc.party_id, pvc.alliance_id 
-		FROM party_vote_count pvc 
-			JOIN (SELECT distinct * FROM winner_alliance_votes) wav
-				ON pvc.election_id = wav.election_id
-				AND pvc.alliance_id <> wav.alliance_id
-				AND pvc.party_id <> wav.party_id losers;
+	FROM party_vote_count pvc 
+		JOIN (SELECT distinct * FROM winner_alliance_votes) as  wav
+			ON pvc.election_id = wav.election_id
+			AND pvc.alliance_id <> wav.alliance_id
+			AND pvc.party_id <> wav.party_id ;
 
 
 -- Get all losers (parties that were not in cabinet) with their votes
